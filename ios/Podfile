@@ -22,12 +22,3 @@ target 'sudokuSolver' do
     flipper_post_install(installer)
   end
 end
-
-target 'sudokuSolver-tvOS' do
-  # Pods for sudokuSolver-tvOS
-
-  target 'sudokuSolver-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-end
