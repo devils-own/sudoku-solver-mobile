@@ -57,3 +57,6 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# OpenCV ios framework
+/ios/opencv2.framework
