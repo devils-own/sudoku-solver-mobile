@@ -37,6 +37,8 @@ const Camera = (props) => {
   };
 
   const getSolvedSudoku = (imageData) => {
+    console.log('Get Solved Sudoku Fnc Called');
+
     getPromiseForSudokuSolver(imageData.base64)
       .then((solvedPhoto) => {
         setContent(solvedPhoto);
@@ -50,6 +52,8 @@ const Camera = (props) => {
 
   const takePicture = async () => {
     // Take Photo and save it.
+    console.log('Take Picture Fnc Called');
+
     if (camera != null) {
       const options = {quality: 0.5, base64: true};
       const data = await camera.takePictureAsync(options);

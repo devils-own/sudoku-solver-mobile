@@ -15,17 +15,33 @@ RCT_EXPORT_METHOD(addEvent:(NSString *)name location:(NSString *)location)
 }
 
 RCT_EXPORT_METHOD(sudokuSolvedImage:(NSString *)imageAsBase64 callback:(RCTResponseSenderBlock)callback) {
-   UIImage* uiImage = [self decodeBase64ToImage:imageAsBase64];
+  UIImage* uiImage = [self decodeBase64ToImage:imageAsBase64];
   
-   cv::Mat cvImg = [self convertUIImageToCVMat:uiImage];
-   cv::cvtColor(cvImg, cvImg, cv::COLOR_BGR2GRAY);
+  cv::Mat cvImg = [self convertUIImageToCVMat:uiImage];
   
-   UIImage* finalUiImage = [self converCVMatToUIImage:cvImg:uiImage.imageOrientation];
-    
-   NSString *finalImage = [self encodeToBase64String:finalUiImage];
+  // Rescale
+  cv::Mat rescaledBuf = [self rescale:cvImg:500];
+  
+  // Convert to Grayscale
+  cv::cvtColor(rescaledBuf, rescaledBuf, cv::COLOR_RGBA2GRAY, 0);
+  
+  // Change Threshold
+  cv::adaptiveThreshold(rescaledBuf, rescaledBuf, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 11, 10);
+
+  UIImage* finalUiImage = [self converCVMatToUIImage:rescaledBuf:uiImage.imageOrientation];
+  
+  NSString *finalImage = [self encodeToBase64String:finalUiImage];
   
   NSArray *dataArray = @[finalImage];
   callback(@[[NSNull null], dataArray]);
+}
+
+- (cv::Mat)rescale:(cv::Mat)src:(int)newWidth {
+  cv::Mat dest;
+  cv::Size srcSize = src.size();
+  cv::Size *destSize = new cv::Size(newWidth, srcSize.height * newWidth / srcSize.width);
+  cv::resize(src, dest, *destSize);
+  return dest;
 }
 
 - (UIImage *)decodeBase64ToImage:(NSString *)strEncodeData {
